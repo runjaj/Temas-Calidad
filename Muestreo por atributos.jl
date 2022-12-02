@@ -338,10 +338,212 @@ Este método funciona, pero  tiene que haber una manera más sencilla de obtener
 # ╔═╡ f8ab6471-7a20-4360-a306-a1c9b236751b
 md"""
 ## Curvas OC a partir de las funciones de distribución
+
+Para entender como podemos calcular la probabilidad de aceptación sin necesidad de tener que recurrir a simulaciones, vamos a plantear un caso sencillo.
+"""
+
+# ╔═╡ aa7ae2c7-146a-4271-8988-e084370000b8
+md"""
+**Características del lote:**
+
+_N_ = $(@bind N_senc Slider(1:20, show_value=true, default=10)) | 
+_Np_ = $(@bind Np_senc Slider(0:20, show_value=true, default=3))
+
+**Muestra:**
+
+_n_ = $(@bind n_senc Slider(1:20, show_value=true, default=5)) | _c_ = $(@bind c_senc Slider(0:20, show_value=true, default=2))
+
+Crearemos un lote con las características anteriores y marcaremos con una `💩` las unidades defectuosas:
 """
 
 # ╔═╡ 5ad473e8-e5e2-4c0a-b4a3-3f98cfabeeef
+# ejemplo: senc
+md"""
+!!! note "Caso sencillo de muestreo"
 
+Consideremos el siguiente caso, tenemos un lote de $(N_senc) unidades. Tomaremos un tamaño de muestra de $(n_senc) unidades. El lote tendrá $(Np_senc) unidades defectuosas (_Np_) y se aceptarán lotes de $(c_senc) unidades.
+"""
+
+# ╔═╡ ac46a258-510a-4aff-889a-898c1ec763b9
+begin
+	lote_senc = [(i>Np_senc ? string(i)*"🥫" : string(i)*"💩") for i in 1:N_senc]
+	combis_senc = collect(combinations(lote_senc, n_senc))
+		
+	function header(num)
+		header_senc = "| "
+		sep_senc = "|"
+		for i in 1:num
+			header_senc = header_senc*" "*" |"
+			sep_senc = sep_senc*"---"*"|"
+		end
+		header_senc*"\n"*sep_senc*"\n"
+	end
+		
+	function fila(fila_lote)
+		fila_senc = "| "
+		for i in fila_lote
+			fila_senc = fila_senc*" "*i*" |"
+		end
+		fila_senc
+	end
+		
+	function tabla(lote)
+		texto_tabla=""
+		for i in lote
+			texto_tabla = texto_tabla*fila(i)*"\n"
+		end
+		texto_tabla = header(length(lote[1]))*texto_tabla
+	end
+
+	Markdown.parse(header(length(lote_senc))*fila(lote_senc))
+end
+
+# ╔═╡ 81136cc2-3b82-42d6-b3cb-5a31d5386720
+md"""
+Estas son todas las posibles muestras:
+
+!!! warning
+	Decidir que formato es mejor.
+"""
+
+# ╔═╡ 9b0eb510-3cf2-4f81-8acd-6ddf21e98501
+collect(combinations(lote_senc, n_senc))
+
+# ╔═╡ 443a220d-a0e0-4afb-b342-d0a22bccf2e6
+# Markdown.parse(tabla(combis_senc))
+
+# ╔═╡ 2be1caf2-e9ad-4a56-9f3e-213d9f2425f9
+md"""
+Tenemos un total de $(length(combis_senc)) posibles combinaciones. Estamos agrupando los $(N_senc) elementos del lotes en grupos de $(n_senc) unidades sin tener en cuenta el orden, es decir, estamos realizando las combinaciones:
+
+$\textsf{Número total de combinaciones} = \binom{N}{n} = C_n^N = \frac{N!}{(N-n)! n!}$
+
+La fórmula para encontar el número de combinaciones es el binomio de Newton.
+
+Comprobamos con los datos del ejemplo que llegamos al resultado correcto:
+"""
+
+# ╔═╡ 882916a5-f383-444b-b872-04a901d0e983
+begin
+	combina(N, n) = factorial(N)/(factorial(N-n)*factorial(n))
+	
+	total_muestras_senc = combina(N_senc, n_senc)
+end
+
+# ╔═╡ 1e3dc7f5-a198-4c1b-bec8-ed709f7a740f
+md"""
+Las muestras tienen $(n_senc) elementos. De las $(Int(total_muestras_senc)), ¿cuántas tendrán $(@bind d_senc Scrubbable(2)) unidad no conforme?
+
+Las muestras tienen dos partes, una parte con las unidades defectuosas (_d_) y otra con unidades correctas (_n - d_). En este ejemplo:
+"""
+
+# ╔═╡ 7f8cc7e7-0ac0-44ac-a66a-7e1cd1675e1f
+md"""
+| Defectuosas | Correctas |
+|:-----------:|:----------:|
+| $("👎"^d_senc) | $("👍"^(n_senc-d_senc)) |
+"""
+
+# ╔═╡ d7241e98-2e67-4cdf-8ed5-a55490c23049
+md"""
+Podemos ver cuantas combinaciones posibles existen para la parte de unidades defectuosas. En nuestro lote tenemos $(Np_senc) unidades defectuosas, son estas:
+
+ $(lote_senc[1:Np_senc])
+
+Las vamos a combinar en grupos de tamaño _d_ = $(d_senc):
+"""
+
+# ╔═╡ bd3501d6-b09a-48be-b944-311703d41e15
+Markdown.parse(tabla(collect(combinations(lote_senc[1:Np_senc], d_senc))))
+
+# ╔═╡ 18d23064-b6af-47f5-8634-da46c9a96c37
+md"""
+Vemos que tenemos $(length(combinations(lote_senc[1:Np_senc], d_senc))) posibles combinaciones. El resultado es esperable, ya que las combinaciones de $Np_senc elementos tomados de $d_senc en $d_senc es:
+"""
+
+# ╔═╡ de500011-1339-4b38-bcc7-401f94260b58
+combina(Np_senc, d_senc)
+
+# ╔═╡ b5a4c5c1-eb4d-440e-ac6d-54b98b234988
+md"""
+Para la parte de unidades no defectuosas, ¿cuántas posibles combinaciones son posibles? Como hemos visto más arriba, en el lote tenemos estas unidades no conformes:
+
+ $(lote_senc[Np_senc+1:N_senc])
+
+Las vamos a combinar de $(n_senc-d_senc) en $(n_senc-d_senc), ya que de la muestra (_n_ = $n_senc) $(n_senc-d_senc) unidades no tienen defectos.
+
+Tenemos las siguientes combinaciones:
+"""
+
+# ╔═╡ 6eb0d2d2-08ab-4547-b77d-e1fb7ec02389
+collect(combinations(lote_senc[Np_senc+1: N_senc], n_senc-d_senc))
+
+# ╔═╡ 9613a4bc-75b5-40ad-aaba-b1f047e31948
+md"""
+Lo que supone un total de $(length(combinations(lote_senc[Np_senc+1: N_senc], n_senc-d_senc))) combinaciones.
+
+Entonces, ¿cuántos posibles lotes tendrán $d_senc unidades no conformes? Simplemente será el producto entre el número de combinaciones debidas a las unidades no conformes por el número de combinaciones debidas a las unidades sin defectos:
+
+ $(length(combinations(lote_senc[1:Np_senc], d_senc))) x $(length(combinations(lote_senc[Np_senc+1: N_senc], n_senc-d_senc))) = $(length(combinations(lote_senc[1:Np_senc], d_senc))*length(combinations(lote_senc[Np_senc+1: N_senc], n_senc-d_senc))) posibles combinaciones.
+
+Esto supone que la fracción de unidades será:
+
+_P_(_x_ = $d_senc) = $(length(combinations(lote_senc[1:Np_senc], d_senc))*length(combinations(lote_senc[Np_senc+1: N_senc], n_senc-d_senc))) / $(total_muestras_senc) = $(P₁ = length(combinations(lote_senc[1:Np_senc], d_senc))*length(combinations(lote_senc[Np_senc+1: 
+N_senc], n_senc-d_senc))/total_muestras_senc)
+
+Recapitulando el cálculo que hemos realizado, encontramos que la fracción con un número de unidades defectuosas _d_ es:
+
+$\LARGE{
+P(x=d) = \frac{\color{red}\overset{\overset{\text{Defectuosas}}{\big\uparrow}}{\binom{Np}{d}} \color{blue}\overset{\overset{\text{Correctas}}{\big\uparrow}}{\binom{N-Np}{n-d}}}{\color{green}\underset{\underset{\text{Total muestras}}{\big\downarrow}}{\binom{N}{n}}}
+}$
+
+Esta función se corresponde con la **función de distribución hipergeométrica**.
+"""
+
+# ╔═╡ 592d889c-f27c-476b-b8f1-10b89af68dc6
+begin
+	local mens_senc = "P(x=0)"
+	for i in 1:c_senc
+		mens_senc *= " + P(x=$i)"
+	end
+	
+	md"""
+	Para calcular la probabilidad de aceptación del lote debemos conocer la suma de fracciones con un número de defectos menor o igual al criterio de aceptación. En nuestro ejemplo, el criterio de aceptación es $c_senc, por lo que la probabilidad de aceptación será:
+	
+	Pₐ(x = $c_senc) = $(mens_senc)
+
+	Ya hemos calculado P(x=$d_senc), ahora deberemos calcular el resto:
+	"""
+end
+
+# ╔═╡ ac5ac670-64f4-4114-8ab6-456dfa8c8d4a
+begin
+	P(i) = combina(Np_senc, i) * combina(N_senc-Np_senc, n_senc-i) / combina(N_senc, n_senc)
+	
+	for i in 0:c_senc
+		println("P($i) = $(P(i))")
+	end
+end
+
+# ╔═╡ 5d8c27f4-2f9a-40fc-aa41-5ac2a31765a9
+md"""
+Lo que supone que la probabilidad de aceptación en este caso es:
+"""
+
+# ╔═╡ 7f7ede26-d6b1-40bd-bf19-159a1429a3a4
+Pₐ = sum([P(i) for i in 0:c_senc])
+
+# ╔═╡ 54195548-44f8-454c-ab16-4a25bb22fd80
+md"""
+Para realizar este cálculo hemos utilizado la función de distribución hipergeométrica acumulada
+
+$P_a = \sum_{i=0}^c P(x=i) = \sum_{i=0}^c \frac{\binom{Np}{i} \binom{N-Np}{n-i}}{\binom{N}{n}}$
+
+Podemos comprobar que el resultado obtenido es correcto:
+"""
+
+# ╔═╡ 7586803e-341b-4dc4-b7ee-a758483ec94d
+cdf(Hypergeometric(Np_senc, N_senc-Np_senc, n_senc), c_senc)
 
 # ╔═╡ 9da2825d-66ff-4768-b3b0-1c865f53ba06
 md"""
@@ -377,7 +579,29 @@ PlutoUI.TableOfContents()
 # ╟─9da34e6b-b895-4e95-9dfd-506e0781e00a
 # ╟─d1a20e83-954a-4a7c-ba22-223d0ed3a0da
 # ╟─f8ab6471-7a20-4360-a306-a1c9b236751b
-# ╠═5ad473e8-e5e2-4c0a-b4a3-3f98cfabeeef
+# ╟─5ad473e8-e5e2-4c0a-b4a3-3f98cfabeeef
+# ╟─aa7ae2c7-146a-4271-8988-e084370000b8
+# ╟─ac46a258-510a-4aff-889a-898c1ec763b9
+# ╟─81136cc2-3b82-42d6-b3cb-5a31d5386720
+# ╟─9b0eb510-3cf2-4f81-8acd-6ddf21e98501
+# ╠═443a220d-a0e0-4afb-b342-d0a22bccf2e6
+# ╟─2be1caf2-e9ad-4a56-9f3e-213d9f2425f9
+# ╠═882916a5-f383-444b-b872-04a901d0e983
+# ╟─1e3dc7f5-a198-4c1b-bec8-ed709f7a740f
+# ╟─7f8cc7e7-0ac0-44ac-a66a-7e1cd1675e1f
+# ╟─d7241e98-2e67-4cdf-8ed5-a55490c23049
+# ╟─bd3501d6-b09a-48be-b944-311703d41e15
+# ╟─18d23064-b6af-47f5-8634-da46c9a96c37
+# ╠═de500011-1339-4b38-bcc7-401f94260b58
+# ╟─b5a4c5c1-eb4d-440e-ac6d-54b98b234988
+# ╠═6eb0d2d2-08ab-4547-b77d-e1fb7ec02389
+# ╟─9613a4bc-75b5-40ad-aaba-b1f047e31948
+# ╟─592d889c-f27c-476b-b8f1-10b89af68dc6
+# ╟─ac5ac670-64f4-4114-8ab6-456dfa8c8d4a
+# ╟─5d8c27f4-2f9a-40fc-aa41-5ac2a31765a9
+# ╠═7f7ede26-d6b1-40bd-bf19-159a1429a3a4
+# ╟─54195548-44f8-454c-ab16-4a25bb22fd80
+# ╠═7586803e-341b-4dc4-b7ee-a758483ec94d
 # ╟─9da2825d-66ff-4768-b3b0-1c865f53ba06
 # ╠═e940f120-fbe8-481b-ba90-17d5af80fa07
 # ╠═10a95832-912a-4b4e-b165-41efd7cd6e61
