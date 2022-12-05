@@ -489,7 +489,8 @@ $P_a = \sum_{i=0}^c P(x=i) = \sum_{i=0}^c \frac{\binom{Np}{i} \binom{N-Np}{n-i}}
 
 Afortunadamente cualquier programa de estadística proporciona estos datos.
 
-!!! note "Comprobación de que la simulación coincide con la teoría"
+---
+!!! note "Comprobación de que la simulación coincide con la función hipergeométrica"
 """
 
 # ╔═╡ 012741ee-63d7-447e-bfb3-4b758b83d803
@@ -523,10 +524,53 @@ end
 # ╔═╡ c0b69ab2-59b6-458a-93af-15d45ef5b81b
 md"""
 Comprobamos que los resultados de la simuación y de la teoría coinciden, como era de esperar. Evidentemente si el número de simulaciones es bajo, hay una mayor discrepancia.
+
+---
 """
 
 # ╔═╡ b4b87242-a80c-4d4f-9358-ae742ab3b8ac
+md"""
+### Función de distribución binomial
 
+Otra función de distribución que se puede utilizar en muestreo es la función de distribución binomial. En este caso, calcularemos la probabilidad de aceptación en función de la fracción de unidades no conformes $p$.
+
+---
+!!! note "Función de distribución binomial"
+"""
+
+# ╔═╡ 4141e9e2-65e8-4491-8358-a8550f8df88d
+# ejemplo: binom
+md"""
+**Características del lote:**
+
+_N_ = $(@bind N_binom Slider(1:500, show_value=true, default=300)) | 
+_p_ = $(@bind p_binom Slider(0:.05:1, show_value=true, default=.2))
+
+**Muestra:**
+
+_n_ = $(@bind n_binom Slider(1:100, show_value=true, default=50)) | _c_ = $(@bind c_binom Slider(0:20, show_value=true, default=4))
+
+Número de simulaciones: $(@bind num_binom Select([1, 10, 100, 1000, 10_000, 100_000], default=100)) | $(@bind go_binom Button("Repetir"))
+
+**Resultado de la simulación:**
+"""
+
+# ╔═╡ ba2efcaf-e240-471b-a3d7-59406fe7eebd
+begin
+	go_binom
+	plan_binom = Plan(n_binom, c_binom, false)
+	Np_binom = Int(round(p_binom*N_binom))
+	Np_arr_binom = 1:Int(round(Np_binom/20)):Np_binom
+	oc_sim_binom = crear_oc(plan_binom, Np_arr_binom, N_binom, num_binom)
+	oc_binom = oc_b(plan_binom, Np_arr_binom./N_binom)
+	scatter(oc_sim_binom.p, oc_sim_binom.Pa, label="Simulación", xlabel="p", ylabel="Pₐ")
+	plot!(oc_binom.p, oc_binom.Pa, line=:steppost, label="Función binomial")
+end
+
+# ╔═╡ ee04a53c-7d7c-47df-8f15-cf9bf1b160f4
+md"""
+---
+"""
 
 # ╔═╡ 9da2825d-66ff-4768-b3b0-1c865f53ba06
 md"""
@@ -698,9 +742,12 @@ PlutoUI.TableOfContents()
 # ╠═7586803e-341b-4dc4-b7ee-a758483ec94d
 # ╟─4129796d-7b81-4496-996d-5a13b28510e9
 # ╟─012741ee-63d7-447e-bfb3-4b758b83d803
-# ╟─83657735-d219-42dd-889f-8164b23c552f
+# ╠═83657735-d219-42dd-889f-8164b23c552f
 # ╟─c0b69ab2-59b6-458a-93af-15d45ef5b81b
-# ╠═b4b87242-a80c-4d4f-9358-ae742ab3b8ac
+# ╟─b4b87242-a80c-4d4f-9358-ae742ab3b8ac
+# ╟─4141e9e2-65e8-4491-8358-a8550f8df88d
+# ╟─ba2efcaf-e240-471b-a3d7-59406fe7eebd
+# ╠═ee04a53c-7d7c-47df-8f15-cf9bf1b160f4
 # ╟─9da2825d-66ff-4768-b3b0-1c865f53ba06
 # ╠═e940f120-fbe8-481b-ba90-17d5af80fa07
 # ╠═36cbfb80-8979-4068-9d38-9f4c307a2227
