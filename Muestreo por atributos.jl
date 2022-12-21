@@ -670,7 +670,45 @@ begin
 end
 
 # ╔═╡ d5c25232-1df6-4c77-ab76-df8dc8bac22b
+md"""
+### Relación entre las tres funciones de distribución
+"""
 
+# ╔═╡ 0123bf23-1aa8-4910-aafa-79771bd74342
+Diagram(:mermaid, """
+flowchart TD
+  A[Hipergeométrica] --> |"n/N ≤ 0.1 ."| B[p-Binomial]
+  B --> |"np < 5"| Poisson
+  B --> |"np ≥ 5"| Normal
+  A --> |n/N > 0.1 .|C{"¿p?"} 
+  C --> |"p ≤ 0.1 ."| f-Binomial
+  C --> | p > 0.1 .| Ninguna
+""")
+
+# ╔═╡ 2384a847-f81e-48ab-9b1c-1f825990dda4
+md"""
+### Selección de un plan de muestreo a partir de α y β
+
+A partir del código del paquete de R `AcceptanceSampling`.
+"""
+
+# ╔═╡ bde2496c-9326-4b66-baa3-48e5027c832c
+α_ej = 0.05
+
+# ╔═╡ 897835a5-176b-4c45-8b8a-627e8970aa7f
+p₁_ej = 0.01
+
+# ╔═╡ a0e44b25-5b8a-43e6-8e84-115e684e4900
+β_ej = 0.10
+
+# ╔═╡ 4283889e-27dc-4d5f-b91c-52169133a549
+p₂_ej = 0.06
+
+# ╔═╡ 4717b6c3-6182-46f8-9216-7fa1cf6d0e56
+find_plan(p₁_ej, α_ej, p₂_ej, β_ej, "b")
+
+# ╔═╡ 177a4b51-f1ae-49e2-8c21-0a326554fd30
+find_plan(p₁_ej, α_ej, p₂_ej, β_ej, "p")
 
 # ╔═╡ 9da2825d-66ff-4768-b3b0-1c865f53ba06
 md"""
@@ -865,7 +903,15 @@ PlutoUI.TableOfContents()
 # ╟─93baaa1e-adc5-49dc-a64a-da267cb786be
 # ╟─4e9d891f-66ce-4c41-a117-2495eb7bfb87
 # ╟─dcf261ac-ba74-4bc4-b511-fa8cdaeaac4b
-# ╠═d5c25232-1df6-4c77-ab76-df8dc8bac22b
+# ╟─d5c25232-1df6-4c77-ab76-df8dc8bac22b
+# ╟─0123bf23-1aa8-4910-aafa-79771bd74342
+# ╟─2384a847-f81e-48ab-9b1c-1f825990dda4
+# ╠═bde2496c-9326-4b66-baa3-48e5027c832c
+# ╠═897835a5-176b-4c45-8b8a-627e8970aa7f
+# ╠═a0e44b25-5b8a-43e6-8e84-115e684e4900
+# ╠═4283889e-27dc-4d5f-b91c-52169133a549
+# ╠═4717b6c3-6182-46f8-9216-7fa1cf6d0e56
+# ╠═177a4b51-f1ae-49e2-8c21-0a326554fd30
 # ╟─9da2825d-66ff-4768-b3b0-1c865f53ba06
 # ╠═e940f120-fbe8-481b-ba90-17d5af80fa07
 # ╠═36cbfb80-8979-4068-9d38-9f4c307a2227
