@@ -644,6 +644,34 @@ begin
 	plot!(oc_poisson.p, oc_poisson.Pa, line=:steppost, label="Función de Poisson")
 end
 
+# ╔═╡ 93baaa1e-adc5-49dc-a64a-da267cb786be
+md"""
+#### Relación entre entre las funciones de distribución Binomial y Poisson
+
+A medida que el valor de _n_ se hace más grande se comprueba que la función de distribución binomial tiende a la función de distribución de Poisson.
+
+!!! note "Comparativa entre binomial y Poisson"
+"""
+
+# ╔═╡ 4e9d891f-66ce-4c41-a117-2495eb7bfb87
+# ejemplo: binpois
+	md"""
+	_n_: $(@bind n_binpoiss Slider(1:100, show_value=true)) | 	_c_: $(@bind c_binpoiss Slider(0:20, show_value=true))
+	"""
+
+# ╔═╡ dcf261ac-ba74-4bc4-b511-fa8cdaeaac4b
+begin
+	p_binpoiss = 0.0:.001:0.5
+	plan_binpoiss = Plan(n_binpoiss, c_binpoiss, false)
+	poiss_binpoiss = oc_p(plan_binpoiss, p_binpoiss)
+	bin_binpoiss = oc_b(plan_binpoiss, p_binpoiss)
+	plot(poiss_binpoiss.p, poiss_binpoiss.Pa, label="Poisson", xlabel="p", ylabel="Pₐ", ylim=(0,0))
+	plot!(bin_binpoiss.p, bin_binpoiss.Pa, label="Binomial")
+end
+
+# ╔═╡ d5c25232-1df6-4c77-ab76-df8dc8bac22b
+
+
 # ╔═╡ 9da2825d-66ff-4768-b3b0-1c865f53ba06
 md"""
 ---
@@ -826,7 +854,7 @@ PlutoUI.TableOfContents()
 # ╟─c0b69ab2-59b6-458a-93af-15d45ef5b81b
 # ╟─b4b87242-a80c-4d4f-9358-ae742ab3b8ac
 # ╟─4141e9e2-65e8-4491-8358-a8550f8df88d
-# ╠═ba2efcaf-e240-471b-a3d7-59406fe7eebd
+# ╟─ba2efcaf-e240-471b-a3d7-59406fe7eebd
 # ╟─ee04a53c-7d7c-47df-8f15-cf9bf1b160f4
 # ╟─44f85a60-6de2-47c7-9361-c2bad5ae1e7b
 # ╟─4bbebe53-3be9-4b47-b944-b764812d8436
@@ -834,6 +862,10 @@ PlutoUI.TableOfContents()
 # ╟─a4169de8-075a-4fdb-9d6c-e73762b5e45b
 # ╟─fa4bdf5e-ff14-4b16-8a0e-26f43b46a6a4
 # ╟─1d9ffec6-27c3-4276-9619-cdd599a5c37c
+# ╟─93baaa1e-adc5-49dc-a64a-da267cb786be
+# ╟─4e9d891f-66ce-4c41-a117-2495eb7bfb87
+# ╟─dcf261ac-ba74-4bc4-b511-fa8cdaeaac4b
+# ╠═d5c25232-1df6-4c77-ab76-df8dc8bac22b
 # ╟─9da2825d-66ff-4768-b3b0-1c865f53ba06
 # ╠═e940f120-fbe8-481b-ba90-17d5af80fa07
 # ╠═36cbfb80-8979-4068-9d38-9f4c307a2227
