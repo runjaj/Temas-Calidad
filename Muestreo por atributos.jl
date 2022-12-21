@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.16
+# v0.19.18
 
 using Markdown
 using InteractiveUtils
@@ -252,10 +252,7 @@ P_a = \frac{\text{Núm. de lotes aceptados}}{\text{Número total de lotes muestr
 $(aside(tip(md"``P_a``: Probabilidad de aceptar un lote con un nivel de calidad ``p``.")))
 
 Para la simulación anterior, encontramos que:
-
-``P_a`` = $(acep_simul)/$num_simul = $(round(acep_simul/num_simul;digits=3))
 """
-
 
 # ╔═╡ df6efd4c-764a-4955-a74b-e482ec4ce79f
 md"""
@@ -534,6 +531,10 @@ md"""
 
 Otra función de distribución que se puede utilizar en muestreo es la función de distribución binomial. En este caso, calcularemos la probabilidad de aceptación en función de la fracción de unidades no conformes $p$.
 
+La principal ventaja de la función de distribución binomial es que no es necesario conocer el tamaño del lote, ya que se trabaja con los valores de $p$.
+
+La función de distribución binomial se utiliza para muestreos con reemplazo. Es decir, cada vez que se muestrea una unidad del lote, se sustituye por otra unidad. Esto supone que el tamaño el lote tras el muestreo es $N$ y no $N-n$.
+
 ---
 !!! note "Función de distribución binomial"
 """
@@ -558,7 +559,7 @@ Número de simulaciones: $(@bind num_binom Select([1, 10, 100, 1000, 10_000, 100
 # ╔═╡ ba2efcaf-e240-471b-a3d7-59406fe7eebd
 begin
 	go_binom
-	plan_binom = Plan(n_binom, c_binom, false)
+	plan_binom = Plan(n_binom, c_binom, true)
 	Np_binom = Int(round(p_binom*N_binom))
 	Np_arr_binom = 1:Int(round(Np_binom/20)):Np_binom
 	oc_sim_binom = crear_oc(plan_binom, Np_arr_binom, N_binom, num_binom)
@@ -572,6 +573,40 @@ md"""
 ---
 """
 
+# ╔═╡ 44f85a60-6de2-47c7-9361-c2bad5ae1e7b
+cm"""
+### Relación entre la función hipergeométrica y la binomial
+
+Al aumentar el tamaño el lote ``N``, la función de distribución hipergeométrica tiende a la binomial.
+
+---
+!!! note "Comparativa entre la función hipergeométrica y binomial"
+"""
+
+# ╔═╡ 4bbebe53-3be9-4b47-b944-b764812d8436
+# ejemplo : hipbin
+md"""
+_N_: $(@bind N_hipbin Slider(1:300, show_value=true, default=100)) $br
+_n_: $(@bind n_hipbin Slider(1:300, show_value=true, default=10)) | _c_: $(@bind c_hipbin Slider(0:20, show_value=true))
+"""
+
+# ╔═╡ 51fe4e59-9acf-4ea6-9ed4-4d9f9acb9edd
+begin
+	if n_hipbin <= N_hipbin && c_hipbin <= n_hipbin
+		d_hipbin = 0:N_hipbin
+		p_hipbin = d_hipbin./N_hipbin
+		plan_hipbin = Plan(n_hipbin, c_hipbin, false)
+		plan_reem_hipbin = Plan(n_hipbin, c_hipbin, true)
+		hiper_hipbin = oc_h(plan_hipbin, d_hipbin, N_hipbin)
+		bin_hipbin = oc_b(plan_reem_hipbin, p_hipbin)
+		plot(hiper_hipbin.p, hiper_hipbin.Pa, label="Hipergeométrica",
+			xlabel="p", ylabel="Pₐ", ylim=(0,0))
+		plot!(bin_hipbin.p, bin_hipbin.Pa, label="Binomial")
+	else
+		error("n debe ser menor o igual que N y c debe ser menor o igual que n")
+	end
+end
+
 # ╔═╡ 9da2825d-66ff-4768-b3b0-1c865f53ba06
 md"""
 ---
@@ -583,6 +618,13 @@ begin
 	parser = Parser()
 	enable!(parser, MathRule())
 end
+
+# ╔═╡ 5a7603cc-bdd1-4933-9052-85a14849ea7b
+parser("""
+```math
+P_a = \\frac{$(acep_simul)}{$num_simul} = $(round(acep_simul/num_simul;digits=3))
+```
+""")
 
 # ╔═╡ 882916a5-f383-444b-b872-04a901d0e983
 begin
@@ -705,6 +747,7 @@ PlutoUI.TableOfContents()
 # ╟─9f95f89a-0f3d-445d-8991-f69961fca35f
 # ╟─56b21ea7-d015-4f5b-91ed-b8db6bc1b271
 # ╟─5a43c763-d972-41e2-8f5a-161c15b3587b
+# ╟─5a7603cc-bdd1-4933-9052-85a14849ea7b
 # ╟─df6efd4c-764a-4955-a74b-e482ec4ce79f
 # ╟─cc70fc39-6884-485a-b1c5-c73445d05f39
 # ╟─1e3e1c9f-cd6a-403c-b5fc-c64a4bd50e6b
@@ -742,12 +785,15 @@ PlutoUI.TableOfContents()
 # ╠═7586803e-341b-4dc4-b7ee-a758483ec94d
 # ╟─4129796d-7b81-4496-996d-5a13b28510e9
 # ╟─012741ee-63d7-447e-bfb3-4b758b83d803
-# ╠═83657735-d219-42dd-889f-8164b23c552f
+# ╟─83657735-d219-42dd-889f-8164b23c552f
 # ╟─c0b69ab2-59b6-458a-93af-15d45ef5b81b
 # ╟─b4b87242-a80c-4d4f-9358-ae742ab3b8ac
 # ╟─4141e9e2-65e8-4491-8358-a8550f8df88d
 # ╟─ba2efcaf-e240-471b-a3d7-59406fe7eebd
-# ╠═ee04a53c-7d7c-47df-8f15-cf9bf1b160f4
+# ╟─ee04a53c-7d7c-47df-8f15-cf9bf1b160f4
+# ╟─44f85a60-6de2-47c7-9361-c2bad5ae1e7b
+# ╟─4bbebe53-3be9-4b47-b944-b764812d8436
+# ╟─51fe4e59-9acf-4ea6-9ed4-4d9f9acb9edd
 # ╟─9da2825d-66ff-4768-b3b0-1c865f53ba06
 # ╠═e940f120-fbe8-481b-ba90-17d5af80fa07
 # ╠═36cbfb80-8979-4068-9d38-9f4c307a2227
