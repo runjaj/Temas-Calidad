@@ -607,6 +607,43 @@ begin
 	end
 end
 
+# ╔═╡ a4169de8-075a-4fdb-9d6c-e73762b5e45b
+md"""
+### Función de distribución de Poisson
+
+---
+!!! note "Función de distribución de Poisson"
+"""
+
+# ╔═╡ fa4bdf5e-ff14-4b16-8a0e-26f43b46a6a4
+# ejemplo: poisson
+md"""
+**Características del lote:**
+
+_N_ = $(@bind N_poisson Slider(1:500, show_value=true, default=300)) | 
+_p_ = $(@bind p_poisson Slider(0:.05:1, show_value=true, default=.2))
+
+**Muestra:**
+
+_n_ = $(@bind n_poisson Slider(1:100, show_value=true, default=50)) | _c_ = $(@bind c_poisson Slider(0:20, show_value=true, default=4))
+
+Número de simulaciones: $(@bind num_poisson Select([1, 10, 100, 1000, 10_000, 100_000], default=100)) | $(@bind go_poisson Button("Repetir"))
+
+**Resultado de la simulación:**
+"""
+
+# ╔═╡ 1d9ffec6-27c3-4276-9619-cdd599a5c37c
+begin
+	go_poisson
+	plan_poisson = Plan(n_poisson, c_poisson, true)
+	Np_poisson = Int(round(p_poisson*N_poisson))
+	Np_arr_poisson = 1:Int(round(Np_poisson/20)):Np_poisson
+	oc_sim_poisson = crear_oc(plan_poisson, Np_arr_poisson, N_poisson, num_poisson)
+	oc_poisson = oc_p(plan_poisson, Np_arr_poisson./N_poisson)
+	scatter(oc_sim_poisson.p, oc_sim_poisson.Pa, label="Simulación", xlabel="p", ylabel="Pₐ")
+	plot!(oc_poisson.p, oc_poisson.Pa, line=:steppost, label="Función de Poisson")
+end
+
 # ╔═╡ 9da2825d-66ff-4768-b3b0-1c865f53ba06
 md"""
 ---
@@ -789,11 +826,14 @@ PlutoUI.TableOfContents()
 # ╟─c0b69ab2-59b6-458a-93af-15d45ef5b81b
 # ╟─b4b87242-a80c-4d4f-9358-ae742ab3b8ac
 # ╟─4141e9e2-65e8-4491-8358-a8550f8df88d
-# ╟─ba2efcaf-e240-471b-a3d7-59406fe7eebd
+# ╠═ba2efcaf-e240-471b-a3d7-59406fe7eebd
 # ╟─ee04a53c-7d7c-47df-8f15-cf9bf1b160f4
 # ╟─44f85a60-6de2-47c7-9361-c2bad5ae1e7b
 # ╟─4bbebe53-3be9-4b47-b944-b764812d8436
 # ╟─51fe4e59-9acf-4ea6-9ed4-4d9f9acb9edd
+# ╟─a4169de8-075a-4fdb-9d6c-e73762b5e45b
+# ╟─fa4bdf5e-ff14-4b16-8a0e-26f43b46a6a4
+# ╟─1d9ffec6-27c3-4276-9619-cdd599a5c37c
 # ╟─9da2825d-66ff-4768-b3b0-1c865f53ba06
 # ╠═e940f120-fbe8-481b-ba90-17d5af80fa07
 # ╠═36cbfb80-8979-4068-9d38-9f4c307a2227
