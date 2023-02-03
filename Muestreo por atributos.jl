@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.18
+# v0.19.20
 
 using Markdown
 using InteractiveUtils
@@ -371,9 +371,6 @@ $P_a = \sum_{i=0}^c P(x=i) = \sum_{i=0}^c \frac{\binom{Np}{i} \binom{N-Np}{n-i}}
 Podemos comprobar que el resultado obtenido es correcto:
 """
 
-# ╔═╡ 7586803e-341b-4dc4-b7ee-a758483ec94d
-cdf(Hypergeometric(Np_senc, N_senc-Np_senc, n_senc), c_senc)
-
 # ╔═╡ 4129796d-7b81-4496-996d-5a13b28510e9
 md"""
 ### Función Hipergeométrica
@@ -644,17 +641,20 @@ Entonces, ¿cuántos posibles lotes tendrán $d_senc unidades no conformes? Simp
 Esto supone que la fracción de unidades será:
 """
 
+# ╔═╡ 7586803e-341b-4dc4-b7ee-a758483ec94d
+cdf(Hypergeometric(Np_senc, N_senc-Np_senc, n_senc), d_senc)
+
 # ╔═╡ ac5ac670-64f4-4114-8ab6-456dfa8c8d4a
 begin
 	P(i) = combina(Np_senc, i) * combina(N_senc-Np_senc, n_senc-i) / combina(N_senc, n_senc)
 	
-	for i in 0:c_senc
+	for i in 0:d_senc-1
 		println("P($i) = $(P(i))")
 	end
 end
 
 # ╔═╡ 7f7ede26-d6b1-40bd-bf19-159a1429a3a4
-Pₐ = sum([P(i) for i in 0:c_senc])
+Pₐ = sum([P(i) for i in 0:d_senc])
 
 # ╔═╡ 744e8f44-d93f-427b-ba36-2c843b05112f
 parser("""
@@ -1163,9 +1163,9 @@ PlutoUI = "~0.7.49"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.3"
+julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "18233cf79b9f05d4a7a5430d67158cc6b23a9e14"
+project_hash = "f55befcf294b8fcc09d81f33d39e42d7e42d9d93"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1195,7 +1195,7 @@ uuid = "6e34b625-4abd-537c-b88f-471c36dfa7a0"
 version = "1.0.8+0"
 
 [[deps.Cairo_jll]]
-deps = ["Artifacts", "Bzip2_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Pkg", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
+deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Pkg", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
 git-tree-sha1 = "4b859a208b2397a7a623a03449e4636bdb17bcf2"
 uuid = "83423d85-b0ee-5818-9007-b63ccbeb887a"
 version = "1.16.1+1"
@@ -1274,7 +1274,7 @@ version = "4.5.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "0.5.2+0"
+version = "1.0.1+0"
 
 [[deps.Contour]]
 git-tree-sha1 = "d05d9e7b7aedff4e5b51a029dced05cfb6125781"
@@ -2303,7 +2303,7 @@ version = "1.4.1+0"
 # ╟─18d23064-b6af-47f5-8634-da46c9a96c37
 # ╟─744e8f44-d93f-427b-ba36-2c843b05112f
 # ╟─b5a4c5c1-eb4d-440e-ac6d-54b98b234988
-# ╠═6eb0d2d2-08ab-4547-b77d-e1fb7ec02389
+# ╟─6eb0d2d2-08ab-4547-b77d-e1fb7ec02389
 # ╟─9613a4bc-75b5-40ad-aaba-b1f047e31948
 # ╟─55f28da0-ea8e-42d1-bb7a-86968a594063
 # ╟─ebf037f7-d686-4804-a94c-114a98614bf7
@@ -2311,7 +2311,7 @@ version = "1.4.1+0"
 # ╟─534cd884-9e51-442f-a5ba-80ae8fdf81fc
 # ╟─ac5ac670-64f4-4114-8ab6-456dfa8c8d4a
 # ╟─5d8c27f4-2f9a-40fc-aa41-5ac2a31765a9
-# ╠═7f7ede26-d6b1-40bd-bf19-159a1429a3a4
+# ╟─7f7ede26-d6b1-40bd-bf19-159a1429a3a4
 # ╟─54195548-44f8-454c-ab16-4a25bb22fd80
 # ╠═7586803e-341b-4dc4-b7ee-a758483ec94d
 # ╟─4129796d-7b81-4496-996d-5a13b28510e9

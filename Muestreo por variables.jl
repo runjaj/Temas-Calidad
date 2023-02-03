@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.18
+# v0.19.20
 
 using Markdown
 using InteractiveUtils
@@ -28,7 +28,7 @@ Consideremos que tenemos un parámetro de calidad que sigue una función de dist
 """
 
 # ╔═╡ d4375a7c-40ca-4c18-a004-04b72c6c264e
-μ = 6
+μ = 8
 
 # ╔═╡ 563743e6-5388-4465-ade9-c2ff3347e50f
 σ = 2
@@ -233,11 +233,11 @@ Podemos utilizar _k_ como criterio de aceptación. Si la media de la muestra $\b
 
 El límite de aceptación será:
 
-$$L+k\sigma=\bar{X}$$
+$$L= \bar{X} - k\sigma$$
 
 lo que supone que el criterio de aceptación será:
 
-$$L \le \bar{X}+k\sigma$$
+$$L \le \bar{X}$$
 """
 
 # ╔═╡ 63191c40-9860-470b-908a-bc167e34df3c
@@ -250,28 +250,28 @@ md"""
  $\bar{X}$ = $(@bind xbar_1 Slider(μ-2σ:.05:μ+3σ, show_value=true, default = μ))
 """
 
+# ╔═╡ c9580937-f448-4375-9c7f-902c7b84d5f6
+cm"""
+La muestra se **$(L<=xbar_1 ? "ACEPTA" : "RECHAZA")**.
+"""
+
 # ╔═╡ 2c982a39-d9a7-43f7-b3a7-ace5e7e630fa
 begin
 	# EJEMPLO 4
 	ksigma = μ-p_pos
 	hk_4 = pdf(pob_dist, p_pos)/2
-	plot((μ-3σ):.01:(μ+3σ), x->pdf(pob_dist,x), lw=4, label="U. individuales")
-	plot!((μ-3σ):.01:p_pos, x->pdf(pob_dist,x), lw=0, fill=0, fillalpha=1, label="Rechazo")
+	miplot = plot((μ-3σ):.01:p_pos, x->pdf(pob_dist,x), lw=0, fill=0, fillalpha=.4, label="Rechazo", fillcolor=:red)
+	plot!((μ-3σ):.01:(μ+3σ), x->pdf(pob_dist,x), lw=4, label="U. individuales", color=:blue)
 	vline!([p_pos, μ], label="")
 	scatter!([xbar_1], [pdf(pob_dist, xbar_1)], markersize=8, label="")
 	plot!([xbar_1, xbar_1], [0, pdf(pob_dist, xbar_1)], lw =2, label="")
 	annotate!(xbar_1, pdf(pob_dist, L), (" x̄", :bottom, :left))
-	vspan!([(μ-3σ), p_pos], fill=0.2, fillcolor=:red, label="Rechazo")
-	vspan!([p_pos, μ], fill=0.2, fillcolor=:orange, label="")
+	vspan!([(μ-3σ), p_pos], fill=0.15, fillcolor=:red, label="")
+	vspan!([p_pos, μ+3σ], fill=0.15, fillcolor=:orange, label="Aceptación")
 	plot!([p_pos, μ], [hk_4, hk_4], arrows=(:closed, :both), label="")
 	annotate!(mean([p_pos, μ]), hk_4, ("kσ", :bottom))	
 	annotate!(L, pdf(pob_dist, L), ("L", 14, :bottom))
 end
-
-# ╔═╡ c9580937-f448-4375-9c7f-902c7b84d5f6
-md"""
-La muestra se **$(xbar_1<L+ksigma ? "RECHAZA" : "ACEPTA")**.
-"""
 
 # ╔═╡ 87028070-d3fa-4435-8205-c5f523a91695
 md"""
@@ -370,7 +370,7 @@ Por ejemplo, consideremos que tenemos los siguientes riesgos y queremos encontra
 p₁ = 0.01
 
 # ╔═╡ c7852b2d-0dc9-4c8a-8f0a-9f14b16f5417
-p₂ = 0.046
+p₂ = 0.08
 
 # ╔═╡ c93a6041-4686-46e3-bedc-a4a4c4b2274f
 α = 0.05
@@ -884,7 +884,7 @@ PlutoUI = "~0.7.49"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.3"
+julia_version = "1.8.5"
 manifest_format = "2.0"
 project_hash = "c4bfefe4609908be48454bbdc89a783de6295f19"
 
@@ -922,7 +922,7 @@ uuid = "6e34b625-4abd-537c-b88f-471c36dfa7a0"
 version = "1.0.8+0"
 
 [[deps.Cairo_jll]]
-deps = ["Artifacts", "Bzip2_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Pkg", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
+deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Pkg", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
 git-tree-sha1 = "4b859a208b2397a7a623a03449e4636bdb17bcf2"
 uuid = "83423d85-b0ee-5818-9007-b63ccbeb887a"
 version = "1.16.1+1"
@@ -996,7 +996,7 @@ version = "4.5.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "0.5.2+0"
+version = "1.0.1+0"
 
 [[deps.ConstructionBase]]
 deps = ["LinearAlgebra"]
@@ -2065,7 +2065,7 @@ version = "1.4.1+0"
 # ╟─663a2370-c1de-4359-937d-f2e54f0aa8c1
 # ╟─ddac22e6-2f5d-4c8f-8f63-738d836591f8
 # ╟─ff1657e8-0b38-4d4c-8f8a-1478bb7ff672
-# ╠═bb18d41a-bcf6-4397-b11a-4c6586d53411
+# ╟─bb18d41a-bcf6-4397-b11a-4c6586d53411
 # ╟─c174a54e-19ed-4de4-b8a7-6837cd8a9118
 # ╟─c805d759-6506-4b4e-8a89-930eb481d1c9
 # ╟─9361ef96-f92e-4608-a91a-57d9b6ff8fb5

@@ -1,0 +1,58 @@
+### A Pluto.jl notebook ###
+# v0.19.20
+
+using Markdown
+using InteractiveUtils
+
+# ╔═╡ 5c2499f8-a0b7-11ed-1d61-614b84ceb5e8
+md"""
+# Seminario 1
+## 1. La calidad como herramienta de mejora
+
+ La planificación de la calidad es una herramienta que nos puede ayudar a diseñar un nuevo producto. El objetivo de este seminario es diseñar un alimento funcional listo para consumir.
+
+El alimento funcional tiene una serie de características que pueden hacerlo atractivo a diferentes grupos de población, desde los más generales a más específicos. Estos atributos tienen además un impacto en el coste:
+
+| Componente    | Característica                        | Precio por unidad (€)  |
+|:--------------|:--------------------------------------|:----------------------:|
+| IMPRESCINDIBLE BASE (como mínimo)                                              |
+| Base          | Formulación mínima del alimento       |  0.5                   |
+| Ecológica     | Formulación base ecológica            |  +0.25                 |
+| MATERIAL DE ENVASADO (Base + extras)                                           |
+| Base          | Material que cumple la legislación UE |  0.05                  |
+| Diseño        | Diseño más atractivo                  |  +0.03                 |
+| Susceptor     | Lograr efecto horno en el microondas  |  +0.10                 |
+| Reciclable    | Envase más reciclable                 |  +0.04                 |
+| COMPONENTES FUNCIONALES (al menos elegir uno)                                  |
+| Biotina       | Funcionamiento del sistema nervioso   |  +0.04                 |
+| Ác. linoleico | Contribuye al crecimiento de los niños|  +0.03                 |
+| Vitamina K    | Mantenimiento de los huesos           |  +0.04                 |
+| Riboflavina   | Mantenimiento de la piel              |  +0.04                 |
+| Vitamina C    | Funcionamiento del sistema inmunitario|  +0.04                 |
+
+Contestar a las siguientes prguntas:
+
+a) **Identificación de los clientes y sus necesidades:** Deberéis decidir el tipo de clientes a los que se va a dirigir este nuevo producto. Describir brevemente sus características y detallar 5 necesidades a las que debe dar respuesta el producto.
+
+b) **Calidad alimentaria:** ¿Qué parámetros objetivos de calidad tiene este producto? ¿Cuales son su cualidades subjetivas?	  	 
+
+c) **Calidad global:** Analizar el nuevo producto teniendo en cuenta las 8 dimensiones de calidad de Garvin.
+
+d) **Análisis de costes:** En el momento de diseñar el producto es imprescindible tener en cuenta los costes. A los costes habrá que añadirles un margen de beneficio de un 10% por unidad. Un estudio de mercado previo ha encontrado la siguiente fórmula que mide el grado de aceptación de los consumidores (en tanto por uno) en función del precio por unidad (en €):
+
+$$aceptación = -0.018*\exp(precio/0.30) + 0.90$$
+
+Para decidir la composición del alimento es necesario dar respuesta a las necesidades de los cliente y maximizar los beneficios, teniendo en cuenta la dirección estratégica de la empresa.
+
+Calcular los beneficios para una población de 100 consumidores.
+
+e) **_Elevator Pitch_:** Preparar una breve presentación de una duración máxima de 30 segundos para "vender" vuestro producto a una persona con capacidad de invertir en la empresa.
+
+"""
+
+# ╔═╡ b2a601e1-6c80-4f3b-9281-dd8a58474e89
+
+
+# ╔═╡ Cell order:
+# ╟─5c2499f8-a0b7-11ed-1d61-614b84ceb5e8
+# ╠═b2a601e1-6c80-4f3b-9281-dd8a58474e89
