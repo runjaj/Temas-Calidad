@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.20
+# v0.19.22
 
 using Markdown
 using InteractiveUtils
@@ -431,6 +431,14 @@ La principal ventaja de la función de distribución binomial es que no es neces
 
 La función de distribución binomial se utiliza para muestreos con reemplazo. Es decir, cada vez que se muestrea una unidad del lote, se sustituye por otra unidad. Esto supone que el tamaño el lote tras el muestreo es $N$ y no $N-n$.
 
+La función de distribución binomial es:
+
+$$P(x=d) = \binom{n}{d} p^d (1-p)^{n-d}$$
+
+La probabilidad de aceptación será la función de distribución acumulada:
+
+$$P_a = \sum_{i=0}^c P(x=i) = \sum_{i=0}^c \binom{n}{i} p^i (1-p)^{n-i}$$
+
 ---
 !!! note "Función de distribución binomial"
 """
@@ -477,6 +485,8 @@ _n_: $(@bind n_hipbin Slider(1:300, show_value=true, default=10)) | _c_: $(@bind
 # ╔═╡ a4169de8-075a-4fdb-9d6c-e73762b5e45b
 md"""
 ### Función de distribución de Poisson
+
+Pa_p(p, n, c) = cdf(Poisson(p*n), c)
 
 ---
 !!! note "Función de distribución de Poisson"
@@ -2314,7 +2324,7 @@ version = "1.4.1+0"
 # ╟─7f7ede26-d6b1-40bd-bf19-159a1429a3a4
 # ╟─54195548-44f8-454c-ab16-4a25bb22fd80
 # ╠═7586803e-341b-4dc4-b7ee-a758483ec94d
-# ╟─4129796d-7b81-4496-996d-5a13b28510e9
+# ╠═4129796d-7b81-4496-996d-5a13b28510e9
 # ╟─012741ee-63d7-447e-bfb3-4b758b83d803
 # ╟─83657735-d219-42dd-889f-8164b23c552f
 # ╟─c0b69ab2-59b6-458a-93af-15d45ef5b81b
@@ -2325,7 +2335,7 @@ version = "1.4.1+0"
 # ╟─44f85a60-6de2-47c7-9361-c2bad5ae1e7b
 # ╟─4bbebe53-3be9-4b47-b944-b764812d8436
 # ╟─51fe4e59-9acf-4ea6-9ed4-4d9f9acb9edd
-# ╟─a4169de8-075a-4fdb-9d6c-e73762b5e45b
+# ╠═a4169de8-075a-4fdb-9d6c-e73762b5e45b
 # ╟─fa4bdf5e-ff14-4b16-8a0e-26f43b46a6a4
 # ╟─1d9ffec6-27c3-4276-9619-cdd599a5c37c
 # ╟─93baaa1e-adc5-49dc-a64a-da267cb786be
