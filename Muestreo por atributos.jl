@@ -200,11 +200,17 @@ $(aside(tip(md"Se puede comprobar esta afirmación fácilmente con la simulació
 !!! note "Curva característica de operación ideal"
 """
 
+# ╔═╡ ae078048-2ee3-485b-861c-f3bf03a4f58a
+@bind reset_ideal Button("Reiniciar")
+
 # ╔═╡ 1e3e1c9f-cd6a-403c-b5fc-c64a4bd50e6b
-# ejemplo: ideal
-md"""
-Nivel de calidad aceptable (NCA) = $(@bind p_ideal Slider(0:.1:1, show_value=true, default=0.5))
-"""
+begin
+	# ejemplo: ideal
+	reset_ideal
+	md"""
+	Nivel de calidad aceptable (NCA) = $(@bind p_ideal Slider(0:.1:1, show_value=true, default=0.5)) 
+	"""
+end
 
 # ╔═╡ e2761ee8-6430-4d67-9e88-6f344f39a509
 begin
@@ -335,7 +341,7 @@ md"""
 Recapitulando el cálculo que hemos realizado, encontramos que la fracción con un número de unidades defectuosas _d_ es:
 
 $\LARGE{
-P(x=d) = \frac{\color{red}\overset{\overset{\text{Defectuosas}}{\big\uparrow}}{\binom{Np}{d}} \color{blue}\overset{\overset{\text{Correctas}}{\big\uparrow}}{\binom{N-Np}{n-d}}}{\color{green}\underset{\underset{\text{Total muestras}}{\big\downarrow}}{\binom{N}{n}}}
+f(x) = \frac{\color{red}\overset{\overset{\text{Defectuosas}}{\big\uparrow}}{\binom{Np}{x}} \color{blue}\overset{\overset{\text{Correctas}}{\big\uparrow}}{\binom{N-Np}{n-x}}}{\color{green}\underset{\underset{\text{Total muestras}}{\big\downarrow}}{\binom{N}{n}}}
 }$
 
 Esta función se corresponde con la **función de distribución hipergeométrica**.
@@ -345,9 +351,9 @@ Esta función se corresponde con la **función de distribución hipergeométrica
 begin
 	
 	function mens_senc(c_senc)
-		mens_senc = "P(x=0)"
+		mens_senc = "f(x=0)"
 		for i in 1:c_senc
-			mens_senc *= " + P(x=$i)"
+			mens_senc *= " + f(x=$i)"
 		end
 		mens_senc
 	end
@@ -366,7 +372,7 @@ Lo que supone que la probabilidad de aceptación en este caso es:
 md"""
 Para realizar este cálculo hemos utilizado la función de distribución hipergeométrica acumulada
 
-$P_a = \sum_{i=0}^c P(x=i) = \sum_{i=0}^c \frac{\binom{Np}{i} \binom{N-Np}{n-i}}{\binom{N}{n}}$
+$P_a = \sum_{i=0}^c f(i) = \sum_{i=0}^c \frac{\binom{Np}{i} \binom{N-Np}{n-i}}{\binom{N}{n}}$
 
 Podemos comprobar que el resultado obtenido es correcto:
 """
@@ -385,11 +391,11 @@ Para poder dibujar la curva característica de operación utilizando la función
 
 Como hemos visto más arriba, la función de distribución es:
 
-$$P(x=d) = \frac{\binom{Np}{d} \binom{N-Np}{n-d}}{\binom{N}{n}}$$
+$$f(x) = \frac{\binom{Np}{x} \binom{N-Np}{n-x}}{\binom{N}{n}}$$
 
 Para representar la curva característica de operación necesitaremos conocer la función de distribución acumulada:
 
-$P_a = \sum_{i=0}^c P(x=i) = \sum_{i=0}^c \frac{\binom{Np}{i} \binom{N-Np}{n-i}}{\binom{N}{n}}$
+$P_a(c) = \sum_{i=0}^c f(i) = \sum_{i=0}^c \frac{\binom{Np}{i} \binom{N-Np}{n-i}}{\binom{N}{n}}$
 
 Afortunadamente cualquier programa de estadística proporciona estos datos.
 
@@ -433,11 +439,11 @@ La función de distribución binomial se utiliza para muestreos con reemplazo. E
 
 La función de distribución binomial es:
 
-$$P(x=d) = \binom{n}{d} p^d (1-p)^{n-d}$$
+$$f(x) = \binom{n}{x} p^d (1-p)^{n-x}$$
 
 La probabilidad de aceptación será la función de distribución acumulada:
 
-$$P_a = \sum_{i=0}^c P(x=i) = \sum_{i=0}^c \binom{n}{i} p^i (1-p)^{n-i}$$
+$$P_a = \sum_{i=0}^c f(i) = \sum_{i=0}^c \binom{n}{i} p^i (1-p)^{n-i}$$
 
 ---
 !!! note "Función de distribución binomial"
@@ -486,7 +492,9 @@ _n_: $(@bind n_hipbin Slider(1:300, show_value=true, default=10)) | _c_: $(@bind
 md"""
 ### Función de distribución de Poisson
 
-Pa_p(p, n, c) = cdf(Poisson(p*n), c)
+La función de Poisson es viene definida por $\mu$, el número medio de defectos. En el caso del muestreo de aceptación, $\mu = np$:
+
+$$f(x)=\frac{\mu^x \mathrm{e}^{-\mu}}{x!}$$
 
 ---
 !!! note "Función de distribución de Poisson"
@@ -576,6 +584,9 @@ md"""
 #    using Plots, AcceptanceSampling, PlutoUI, Kroki, Combinatorics, Distributions, PlutoTeachingTools, CommonMark
 #end
 
+# ╔═╡ 4bca3eb5-3ce1-49ab-b9cb-9b073d632294
+plotly();
+
 # ╔═╡ 36cbfb80-8979-4068-9d38-9f4c307a2227
 begin
 	parser = Parser()
@@ -656,15 +667,15 @@ cdf(Hypergeometric(Np_senc, N_senc-Np_senc, n_senc), d_senc)
 
 # ╔═╡ ac5ac670-64f4-4114-8ab6-456dfa8c8d4a
 begin
-	P(i) = combina(Np_senc, i) * combina(N_senc-Np_senc, n_senc-i) / combina(N_senc, n_senc)
+	f(i) = combina(Np_senc, i) * combina(N_senc-Np_senc, n_senc-i) / combina(N_senc, n_senc)
 	
 	for i in 0:d_senc-1
-		println("P($i) = $(P(i))")
+		println("f($i) = $(f(i))")
 	end
 end
 
 # ╔═╡ 7f7ede26-d6b1-40bd-bf19-159a1429a3a4
-Pₐ = sum([P(i) for i in 0:d_senc])
+Pₐ = sum([f(i) for i in 0:d_senc])
 
 # ╔═╡ 744e8f44-d93f-427b-ba36-2c843b05112f
 parser("""
@@ -676,7 +687,7 @@ parser("""
 # ╔═╡ 55f28da0-ea8e-42d1-bb7a-86968a594063
 parser("""
 ```math
-P(x=$d_senc) = \\frac{$(length(combinations(lote_senc[1:Np_senc], d_senc))*length(combinations(lote_senc[Np_senc+1: N_senc], n_senc-d_senc)))}{$(total_muestras_senc)} = $(length(combinations(lote_senc[1:Np_senc], d_senc))*length(combinations(lote_senc[Np_senc+1:N_senc], n_senc-d_senc))/total_muestras_senc)
+f(x=$d_senc) = \\frac{$(length(combinations(lote_senc[1:Np_senc], d_senc))*length(combinations(lote_senc[Np_senc+1: N_senc], n_senc-d_senc)))}{$(total_muestras_senc)} = $(length(combinations(lote_senc[1:Np_senc], d_senc))*length(combinations(lote_senc[Np_senc+1:N_senc], n_senc-d_senc))/total_muestras_senc)
 """)
 
 # ╔═╡ 534cd884-9e51-442f-a5ba-80ae8fdf81fc
@@ -684,7 +695,7 @@ parser("""
 ```math
 P_a(x=$c_senc) = $(mens_senc(c_senc))
 ```
-Ya hemos calculado P(x=$d_senc), ahora deberemos calcular el resto:
+Ya hemos calculado d(x=$d_senc), ahora deberemos calcular el resto:
 """)
 
 # ╔═╡ 10a95832-912a-4b4e-b165-41efd7cd6e61
@@ -2292,6 +2303,7 @@ version = "1.4.1+0"
 # ╟─df6efd4c-764a-4955-a74b-e482ec4ce79f
 # ╟─cc70fc39-6884-485a-b1c5-c73445d05f39
 # ╟─1e3e1c9f-cd6a-403c-b5fc-c64a4bd50e6b
+# ╟─ae078048-2ee3-485b-861c-f3bf03a4f58a
 # ╟─e2761ee8-6430-4d67-9e88-6f344f39a509
 # ╟─1417443b-5b5c-477d-ba65-e5a3dc4f6811
 # ╟─bed5a7a3-1742-48b4-86a1-44e1b4216839
@@ -2302,7 +2314,7 @@ version = "1.4.1+0"
 # ╟─aa7ae2c7-146a-4271-8988-e084370000b8
 # ╟─ac46a258-510a-4aff-889a-898c1ec763b9
 # ╟─81136cc2-3b82-42d6-b3cb-5a31d5386720
-# ╟─9b0eb510-3cf2-4f81-8acd-6ddf21e98501
+# ╠═9b0eb510-3cf2-4f81-8acd-6ddf21e98501
 # ╠═443a220d-a0e0-4afb-b342-d0a22bccf2e6
 # ╟─2be1caf2-e9ad-4a56-9f3e-213d9f2425f9
 # ╟─882916a5-f383-444b-b872-04a901d0e983
@@ -2324,7 +2336,7 @@ version = "1.4.1+0"
 # ╟─7f7ede26-d6b1-40bd-bf19-159a1429a3a4
 # ╟─54195548-44f8-454c-ab16-4a25bb22fd80
 # ╠═7586803e-341b-4dc4-b7ee-a758483ec94d
-# ╠═4129796d-7b81-4496-996d-5a13b28510e9
+# ╟─4129796d-7b81-4496-996d-5a13b28510e9
 # ╟─012741ee-63d7-447e-bfb3-4b758b83d803
 # ╟─83657735-d219-42dd-889f-8164b23c552f
 # ╟─c0b69ab2-59b6-458a-93af-15d45ef5b81b
@@ -2335,7 +2347,7 @@ version = "1.4.1+0"
 # ╟─44f85a60-6de2-47c7-9361-c2bad5ae1e7b
 # ╟─4bbebe53-3be9-4b47-b944-b764812d8436
 # ╟─51fe4e59-9acf-4ea6-9ed4-4d9f9acb9edd
-# ╠═a4169de8-075a-4fdb-9d6c-e73762b5e45b
+# ╟─a4169de8-075a-4fdb-9d6c-e73762b5e45b
 # ╟─fa4bdf5e-ff14-4b16-8a0e-26f43b46a6a4
 # ╟─1d9ffec6-27c3-4276-9619-cdd599a5c37c
 # ╟─93baaa1e-adc5-49dc-a64a-da267cb786be
@@ -2353,6 +2365,7 @@ version = "1.4.1+0"
 # ╟─9da2825d-66ff-4768-b3b0-1c865f53ba06
 # ╠═e940f120-fbe8-481b-ba90-17d5af80fa07
 # ╠═c4bf4051-6214-45e2-824f-08ddffcd46a8
+# ╠═4bca3eb5-3ce1-49ab-b9cb-9b073d632294
 # ╠═36cbfb80-8979-4068-9d38-9f4c307a2227
 # ╠═10a95832-912a-4b4e-b165-41efd7cd6e61
 # ╠═0a9abf7a-75f9-4abb-a95d-44103eff083b
