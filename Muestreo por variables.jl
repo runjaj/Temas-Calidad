@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.20
+# v0.19.22
 
 using Markdown
 using InteractiveUtils
@@ -16,9 +16,6 @@ end
 
 # ╔═╡ 7018db2a-60d1-11ed-2d8a-35c1275879bc
 using Distributions, Random, Plots, PlutoUI, NLsolve, Kroki, CommonMark, Latexify
-
-# ╔═╡ 04b4e313-141b-4069-9d36-a7005275e4ce
-PlutoUI.TableOfContents()
 
 # ╔═╡ 9052c977-954c-4378-a5ef-1578120ca434
 md"""
@@ -174,15 +171,27 @@ end
 
 # ╔═╡ 9361ef96-f92e-4608-a91a-57d9b6ff8fb5
 md"""
-!!! note "Nota"
-
-	Los límites de especificaciones, _L_ (inferior) y _U_ (superior), también se pueden fijar de manera arbitraria.
+Los límites de especificaciones, _L_ (inferior) y _U_ (superior), también se pueden fijar de manera arbitraria.
+	
+L = $(@bind L_arb Slider(2.5:.1:12.5, show_value=true))
 """
 
+# ╔═╡ 054989a7-427e-45fe-a475-67ca8b065207
+begin
+	plot((μ-3σ):.01:(μ+3σ), x->pdf(pob_dist,x), lw=4, label="Un. individuales")
+	plot!((μ-3σ):.01:L_arb, x -> pdf(pob_dist,x), lw=0, fill=0, fillalpha=0.6, label="p = $p")
+	plot!(L_arb:.01:(μ+3σ), x -> pdf(pob_dist,x), lw=0, fill=0, fillalpha=0.3, label="Pₐ = $(round(1-cdf(pob_dist,L_arb); digits=3))")
+	plot!([L_arb, L_arb], [0, pdf(pob_dist, L_arb)], lw=3, label="")
+	annotate!(L_arb, pdf(pob_dist, L_arb), ("L", 14, :bottom))
+end
+
 # ╔═╡ ce300ae3-f8fe-4f7d-9cd1-6529d020f9de
+# ╠═╡ disabled = true
+#=╠═╡
 md"""
 Tomaremos como criterio de aceptación:
 """
+  ╠═╡ =#
 
 # ╔═╡ 71370979-185c-4e41-841a-f3516f584e87
 begin
@@ -209,77 +218,57 @@ como σ = $(σ), obtenemos que:
 _k_ = $(round((μ-p_pos)/σ; digits=4))
 """
 
-# ╔═╡ a74d44da-da8f-4cb0-a565-035c620b16ba
-cm"""
-!!! note "¿Por qué kσ?"
-
-	Debido a las propiedades de la función de distribución normal. Si consideramos una función normal estándar (μ = 0 y σ = 1), ¿qué valor de _k_ encontrarmos para _p_?
-
-	$(begin
-		plot(-3:.1:3, x->pdf(Normal(), x), legend=false, lw=4)
-		plot!(-3:.01:quantile(Normal(), p), x->pdf(Normal(), x), lw=0, fill=0, fillalpha=0.4, legend=false)
-		plot!([quantile(Normal(), p), quantile(Normal(), p)], [0,pdf(Normal(), quantile(Normal(), p))], lw=4)
-		plot!([0, 0], [0, pdf(Normal(), 0)], lw=4)
-		plot!([quantile(Normal(), p), 0], [0.05, 0.05], arrows=(:closed, :both), lw=2)
-		annotate!(quantile(Normal(), p)/2, 0.065, ("k = $(round(-quantile(Normal(), p); digits=4))", 10))
-end)
-
-	Comprobamos que obtenemos el mismo valor.
-"""
-
 # ╔═╡ 3362bced-65a0-49d9-b503-7111e7122297
 md"""
-Podemos utilizar _k_ como criterio de aceptación. Si la media de la muestra $\bar{X}$ está situada en la zona de naranja, marcada como _kσ_, o en la roja, hay que rechazar el lote.
+Vamos a tomar el siguiente criterio de aceptación:
 
-El límite de aceptación será:
+$$\frac{\bar{X}-L}{\sigma} \ge k$$
 
-$$L= \bar{X} - k\sigma$$
+o lo que es lo mismo:
 
-lo que supone que el criterio de aceptación será:
-
-$$L \le \bar{X}$$
+$$\bar{X} \ge k \sigma +L$$
 """
 
 # ╔═╡ 63191c40-9860-470b-908a-bc167e34df3c
 md"""
-En la siguiente figura se muestra criterio de aceptación para diferentes valores de $\bar{X}$:
+En la siguiente figura se muestra criterio de aceptación para diferentes valores de $\bar{X}$ y de $k$:
 """
 
 # ╔═╡ bb399108-b88a-40bf-984e-35fcbf146480
 md"""
+ $k$ = $(@bind k_4 Slider(0:.1:3*σ, show_value=true, default = 1.0))
+
  $\bar{X}$ = $(@bind xbar_1 Slider(μ-2σ:.05:μ+3σ, show_value=true, default = μ))
 """
+
+# ╔═╡ 2c982a39-d9a7-43f7-b3a7-ace5e7e630fa
+begin
+	# EJEMPLO 4
+	ksigma = k_4*σ
+	hk_4 = pdf(pob_dist, p_pos)/2
+	miplot = plot((μ-3σ):.01:p_pos, x->pdf(pob_dist,x), lw=0, fill=0, fillalpha=.4, label="", fillcolor=:red, xlabel="p", ylabel="Pa")
+	plot!((μ-3σ):.01:(μ+3σ), x->pdf(pob_dist,x), lw=4, label="U. individuales", color=:blue)
+	vline!([p_pos, L+ksigma], label="")
+	scatter!([xbar_1], [pdf(pob_dist, xbar_1)], markersize=8, label="")
+	plot!([xbar_1, xbar_1], [0, pdf(pob_dist, xbar_1)], lw =2, label="")
+	annotate!(xbar_1, pdf(pob_dist, L), (" x̄", :bottom, :left))
+	vspan!([(μ-3σ), L+ksigma], fill=0.15, fillcolor=:red, label="Rechazo")
+	vspan!([L+ksigma, μ+3σ], fill=0.15, fillcolor=:orange, label="Aceptación")
+	plot!([p_pos, L+ksigma], [hk_4, hk_4], arrows=(:closed, :both), label="")
+	annotate!(mean([p_pos, L+ksigma]), hk_4, ("kσ", :bottom))	
+	annotate!(L, pdf(pob_dist, L), ("L", 14, :bottom))
+end
 
 # ╔═╡ c9580937-f448-4375-9c7f-902c7b84d5f6
 cm"""
 La muestra se **$(L<=xbar_1 ? "ACEPTA" : "RECHAZA")**.
 """
 
-# ╔═╡ 2c982a39-d9a7-43f7-b3a7-ace5e7e630fa
-begin
-	# EJEMPLO 4
-	ksigma = μ-p_pos
-	hk_4 = pdf(pob_dist, p_pos)/2
-	miplot = plot((μ-3σ):.01:p_pos, x->pdf(pob_dist,x), lw=0, fill=0, fillalpha=.4, label="Rechazo", fillcolor=:red)
-	plot!((μ-3σ):.01:(μ+3σ), x->pdf(pob_dist,x), lw=4, label="U. individuales", color=:blue)
-	vline!([p_pos, μ], label="")
-	scatter!([xbar_1], [pdf(pob_dist, xbar_1)], markersize=8, label="")
-	plot!([xbar_1, xbar_1], [0, pdf(pob_dist, xbar_1)], lw =2, label="")
-	annotate!(xbar_1, pdf(pob_dist, L), (" x̄", :bottom, :left))
-	vspan!([(μ-3σ), p_pos], fill=0.15, fillcolor=:red, label="")
-	vspan!([p_pos, μ+3σ], fill=0.15, fillcolor=:orange, label="Aceptación")
-	plot!([p_pos, μ], [hk_4, hk_4], arrows=(:closed, :both), label="")
-	annotate!(mean([p_pos, μ]), hk_4, ("kσ", :bottom))	
-	annotate!(L, pdf(pob_dist, L), ("L", 14, :bottom))
-end
-
 # ╔═╡ 87028070-d3fa-4435-8205-c5f523a91695
 md"""
 ### Curva característica de operación
 
-Hemos encontrado un criterio de aceptación, _k_, para realizar un plan de muestreo por variables, pero no podemos calcular el tamaño de muestra.
-
-Para poder determinar el tamaño de muestra y el criterio de aceptación, debremos recurrir a la curva característica de operación.
+Para poder determinar el tamaño de muestra y el criterio de aceptación, deberemos recurrir a la curva característica de operación.
 
 Para poder dibujar esta curva característica, tenemos que poder calcular la probabilidad de aceptación de una muestra de tamaño _n_ con una fracción de unidades no conformes _p_ y un criterio de aceptación _k_.
 """
@@ -318,7 +307,8 @@ begin
 	
 	muest_dist_6 = Normal(μ, σ/sqrt(n_6))
 	L_6 = quantile(pob_dist, p_6)
-	plot((μ-3σ):.01:(μ+3σ), x->pdf(pob_dist,x), lw=4, label="U. individuales")
+	plot((μ-3σ):.01:(μ+3σ), x->pdf(pob_dist,x), lw=4, label="U. individuales",
+	xlabel="p", ylabel="Pa")
 	plot!((μ-3σ):.01:(μ+3σ), x->pdf(muest_dist_6,x), lw=4, label="Med. muestras")
 	plot!((μ-3σ):.01:L_6, x->pdf(pob_dist,x), lw=0, fill=0, fillcolor=:red, fillalpha=0.3, label="p = $p_6")
 	vspan!([L_6, L_6+k_6*σ], fillalpha=0.5, fillcolor=:orange, fillstyle = :+, z_order=:back, label="kσ")
@@ -334,8 +324,11 @@ Vamos a crear una función para calcular la probabilidad de aceptación que real
 
 # ╔═╡ f7fe9643-6c15-477e-b648-e48bfc36c2f5
 function Pa(n, k, p)
+	# Definimos la función de distribución de las muestras
 	muest_dist = Normal(μ, σ/n^.5)
+	# Cálculo del cuantil igual a p
 	L = quantile(pob_dist, p)
+	# Cálculo de la probabilidad de aceptación teniendo en cuenta el criterio de aceptación
 	1-cdf(muest_dist, L+k*σ)
 end
 
@@ -429,6 +422,14 @@ n &= \left\lceil \left(\frac{z_\alpha+z_\beta}{z_{p_1}-z_{p_2}} \right)^2 \right
 \end{align}$$
 """
 
+# ╔═╡ d7b270c1-8f3f-4ea1-99c0-95e20ae94474
+md"""
+!!! note "Nota"
+	La función $z_x$ es la función cuantil:
+
+	$$\Phi^{-1}(p) = \sqrt2 \;\operatorname{erf}^{-1} (2p - 1), \quad p\in(0,1)$$
+"""
+
 # ╔═╡ 04af219e-0f6c-4f0f-905f-fbecd1daed44
 md"""
 !!! note "Nota"
@@ -437,14 +438,14 @@ md"""
 
 # ╔═╡ e3289b5d-4119-45d7-9582-19be179702e7
 md"""
-A continuación se muestran los valores de _n_ y _k_ obtenidos con las fórmuals anteriores y comprobamos que obtenemos los mismos resultdos:
+A continuación se muestran los valores de _n_ y _k_ obtenidos con las fórmulas anteriores y comprobamos que obtenemos los mismos resultdos:
 """
 
 # ╔═╡ 0e2add63-2ad1-4ffa-93a8-f5889dc5fc89
 z(x) = cquantile(Normal(),x)
 
 # ╔═╡ 0348d00a-45f3-4b11-9a9b-23289d9026c6
-k_calc = (z(p₂)*z(α)+z(p₁)*z(β))/(z(α)+ z(β))
+k_calc = (z(p₂)*z(α)+z(p₁)*z(β))/(z(α)+z(β))
 
 # ╔═╡ b483cae5-0b9f-43c3-b5c1-661ecc1ad176
 n_calc = ceil(((z(α)+z(β))/(z(p₁)-z(p₂)))^2)
@@ -599,7 +600,7 @@ end
 md"""
 ### Desviación estándar histórica desconocida
 
-En esta sitación, deberemos trabajar con _s_, la desviación estándar de la muestra, en lugar de con σ.
+En esta situación, deberemos trabajar con _s_, la desviación estándar de la muestra, en lugar de con σ.
 
 El calculo de _k_ se realizará como hemos visto arriba, pero para calcular el tamaño de muestra, lo más simple es utilizar la aproximación de Wallis:
 
@@ -670,7 +671,7 @@ Veamos un ejemplo de aplicación tomado del libro de [Lawson](https://bookdown.o
 
 # ╔═╡ 0ef077d6-c0f6-467d-9568-cde3c203b30b
 md"""
-En primer lugar calculamos $Q_L$":
+En primer lugar calculamos $Q_L$:
 """
 
 # ╔═╡ c037bd80-ff1f-4755-9c92-d197d453e335
@@ -857,6 +858,14 @@ p̂ₘ <= Mₘ
 md"""
 El resultado es que hay que **$(p̂ₘ <= Mₘ ? "aceptar" : "rechazar")** el lote.
 """
+
+# ╔═╡ 1df70d3d-8d82-4a3c-92ea-72ba49ad7620
+md"""
+---
+"""
+
+# ╔═╡ 04b4e313-141b-4069-9d36-a7005275e4ce
+PlutoUI.TableOfContents()
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2035,8 +2044,6 @@ version = "1.4.1+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═7018db2a-60d1-11ed-2d8a-35c1275879bc
-# ╠═04b4e313-141b-4069-9d36-a7005275e4ce
 # ╟─9052c977-954c-4378-a5ef-1578120ca434
 # ╠═d4375a7c-40ca-4c18-a004-04b72c6c264e
 # ╠═563743e6-5388-4465-ade9-c2ff3347e50f
@@ -2069,15 +2076,15 @@ version = "1.4.1+0"
 # ╟─c174a54e-19ed-4de4-b8a7-6837cd8a9118
 # ╟─c805d759-6506-4b4e-8a89-930eb481d1c9
 # ╟─9361ef96-f92e-4608-a91a-57d9b6ff8fb5
-# ╟─ce300ae3-f8fe-4f7d-9cd1-6529d020f9de
-# ╟─71370979-185c-4e41-841a-f3516f584e87
+# ╟─054989a7-427e-45fe-a475-67ca8b065207
+# ╠═ce300ae3-f8fe-4f7d-9cd1-6529d020f9de
+# ╠═71370979-185c-4e41-841a-f3516f584e87
 # ╟─a738c6cd-e1ee-43e3-b8af-a1097a75125b
-# ╟─a74d44da-da8f-4cb0-a565-035c620b16ba
 # ╟─3362bced-65a0-49d9-b503-7111e7122297
 # ╟─63191c40-9860-470b-908a-bc167e34df3c
 # ╟─bb399108-b88a-40bf-984e-35fcbf146480
-# ╟─c9580937-f448-4375-9c7f-902c7b84d5f6
 # ╟─2c982a39-d9a7-43f7-b3a7-ace5e7e630fa
+# ╟─c9580937-f448-4375-9c7f-902c7b84d5f6
 # ╟─87028070-d3fa-4435-8205-c5f523a91695
 # ╟─0c747e5a-4218-41a5-b5b8-57916db7bec7
 # ╟─ba126afa-6f7b-43b3-b1b6-57c5e4a9e457
@@ -2101,6 +2108,7 @@ version = "1.4.1+0"
 # ╟─021e4511-28a8-4d9d-b889-6a70b9a0a831
 # ╟─be08a856-8d4c-4dc5-9c60-09ecee98318d
 # ╟─feb81ece-6503-4a46-b448-235f50434284
+# ╟─d7b270c1-8f3f-4ea1-99c0-95e20ae94474
 # ╟─04af219e-0f6c-4f0f-905f-fbecd1daed44
 # ╟─e3289b5d-4119-45d7-9582-19be179702e7
 # ╠═0e2add63-2ad1-4ffa-93a8-f5889dc5fc89
@@ -2111,7 +2119,7 @@ version = "1.4.1+0"
 # ╟─a83a87fb-121f-4d23-be5b-658dc63d53e7
 # ╟─d17f56f6-4952-4902-aafa-bceb9f2a378e
 # ╟─5bbd3a37-c7ac-47c4-8bb5-ee44f0f9924e
-# ╠═b2d3a39c-f002-4b3b-8d90-ea8e415080e3
+# ╟─b2d3a39c-f002-4b3b-8d90-ea8e415080e3
 # ╟─313b5cf2-d9a0-4f68-8262-c583dda95e8c
 # ╠═bd192dec-5a8e-4a7f-8d0f-85dc3a32b959
 # ╟─713232a1-76e6-4a69-9281-9a478424c2b3
@@ -2174,5 +2182,8 @@ version = "1.4.1+0"
 # ╠═87d48068-d180-457e-b19b-29486b64a226
 # ╠═47184915-65c3-49ff-9031-fba150f349e7
 # ╟─0cf12f11-91d6-44e2-867b-07bcdcdeffe5
+# ╟─1df70d3d-8d82-4a3c-92ea-72ba49ad7620
+# ╠═7018db2a-60d1-11ed-2d8a-35c1275879bc
+# ╠═04b4e313-141b-4069-9d36-a7005275e4ce
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
