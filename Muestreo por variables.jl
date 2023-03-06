@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.22
+# v0.19.19
 
 using Markdown
 using InteractiveUtils
@@ -185,39 +185,6 @@ begin
 	annotate!(L_arb, pdf(pob_dist, L_arb), ("L", 14, :bottom))
 end
 
-# ╔═╡ ce300ae3-f8fe-4f7d-9cd1-6529d020f9de
-# ╠═╡ disabled = true
-#=╠═╡
-md"""
-Tomaremos como criterio de aceptación:
-"""
-  ╠═╡ =#
-
-# ╔═╡ 71370979-185c-4e41-841a-f3516f584e87
-begin
-	p_pos = L
-	plot((μ-3σ):.01:(μ+3σ), x->pdf(pob_dist,x), lw=4, label="U. individuales")
-	plot!((μ-3σ):.01:L, x -> pdf(pob_dist,x), lw=0, fill=0, fillalpha=0.6, label="p = $p")
-	plot!(L:.01:μ, x -> pdf(pob_dist,x), lw=0, fill=0, fillcolor=:orange, fillalpha=0.3, label="Rechazo")
-	plot!([L, L], [0, pdf(pob_dist, L)], lw=3, label="")
-	annotate!(L, pdf(pob_dist, L), ("L", 14, :bottom))
-	plot!([μ, μ], [0, pdf(pob_dist, μ)], lw=3, label="")
-	annotate!(μ, pdf(pob_dist, L), (" x̄", 14, :bottom, :left))
-	plot!([p_pos, μ], [pdf(pob_dist, p_pos)/2, pdf(pob_dist, p_pos)/2], arrows=(:closed, :both), label="")
-	annotate!(mean([μ, p_pos]), pdf(pob_dist, p_pos)/2, ("kσ", :bottom))
-end
-
-# ╔═╡ a738c6cd-e1ee-43e3-b8af-a1097a75125b
-md"""
-El valor _kσ_ garantiza que tendremos el fracción de unidades defectuosas _p_ que tenemos como objetivo de calidad. Es decir, solamente la fracción _p_ tendrán valores del parámetro de calidad por debajo del límite inferior de especificaciones, _L_. En la figura anterior:
-
-_kσ_ = $(round(μ-p_pos; digits=4))
-
-como σ = $(σ), obtenemos que:
-
-_k_ = $(round((μ-p_pos)/σ; digits=4))
-"""
-
 # ╔═╡ 3362bced-65a0-49d9-b503-7111e7122297
 md"""
 Vamos a tomar el siguiente criterio de aceptación:
@@ -236,7 +203,7 @@ En la siguiente figura se muestra criterio de aceptación para diferentes valore
 
 # ╔═╡ bb399108-b88a-40bf-984e-35fcbf146480
 md"""
- $k$ = $(@bind k_4 Slider(0:.1:3*σ, show_value=true, default = 1.0))
+ $k$ = $(@bind k_4 Slider(0:.1:1.5*σ, show_value=true, default = 1.0))
 
  $\bar{X}$ = $(@bind xbar_1 Slider(μ-2σ:.05:μ+3σ, show_value=true, default = μ))
 """
@@ -244,6 +211,7 @@ md"""
 # ╔═╡ 2c982a39-d9a7-43f7-b3a7-ace5e7e630fa
 begin
 	# EJEMPLO 4
+	p_pos = L
 	ksigma = k_4*σ
 	hk_4 = pdf(pob_dist, p_pos)/2
 	miplot = plot((μ-3σ):.01:p_pos, x->pdf(pob_dist,x), lw=0, fill=0, fillalpha=.4, label="", fillcolor=:red, xlabel="p", ylabel="Pa")
@@ -261,7 +229,7 @@ end
 
 # ╔═╡ c9580937-f448-4375-9c7f-902c7b84d5f6
 cm"""
-La muestra se **$(L<=xbar_1 ? "ACEPTA" : "RECHAZA")**.
+La muestra se **$(L+ksigma<=xbar_1 ? "ACEPTA" : "RECHAZA")**.
 """
 
 # ╔═╡ 87028070-d3fa-4435-8205-c5f523a91695
@@ -316,6 +284,11 @@ begin
 	plot!([L_6, L_6], [0, pdf(pob_dist, L_6)], lw=2, label="")
 	plot!([L_6+k_6*σ, L_6+k_6*σ], [0, pdf(muest_dist_6, L_6+k_6*σ)], lw=2, label="")
 end
+
+# ╔═╡ 7b9bccb4-13da-4c04-acc2-311a947de6c2
+md"""
+Modificando los valores de $n$ y de $k$ podríamos encontrar los valores de probabilidad de aceptación y de fracción de unidades no conformes para los riesgos de productor y del comprador.
+"""
 
 # ╔═╡ 48ac993c-93fb-4f2e-83be-3f13dd00572e
 md"""
@@ -893,7 +866,7 @@ PlutoUI = "~0.7.49"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.5"
+julia_version = "1.8.4"
 manifest_format = "2.0"
 project_hash = "c4bfefe4609908be48454bbdc89a783de6295f19"
 
@@ -2077,9 +2050,6 @@ version = "1.4.1+0"
 # ╟─c805d759-6506-4b4e-8a89-930eb481d1c9
 # ╟─9361ef96-f92e-4608-a91a-57d9b6ff8fb5
 # ╟─054989a7-427e-45fe-a475-67ca8b065207
-# ╠═ce300ae3-f8fe-4f7d-9cd1-6529d020f9de
-# ╠═71370979-185c-4e41-841a-f3516f584e87
-# ╟─a738c6cd-e1ee-43e3-b8af-a1097a75125b
 # ╟─3362bced-65a0-49d9-b503-7111e7122297
 # ╟─63191c40-9860-470b-908a-bc167e34df3c
 # ╟─bb399108-b88a-40bf-984e-35fcbf146480
@@ -2091,6 +2061,7 @@ version = "1.4.1+0"
 # ╟─ba5f4420-1e38-4d58-94dd-7ea17cf2f81a
 # ╟─86db4e39-52a1-4cf0-8dfa-b9d5cef8f8ae
 # ╟─4c1fb69a-123b-4909-8015-208107c0e955
+# ╟─7b9bccb4-13da-4c04-acc2-311a947de6c2
 # ╟─48ac993c-93fb-4f2e-83be-3f13dd00572e
 # ╠═f7fe9643-6c15-477e-b648-e48bfc36c2f5
 # ╟─7399ecb3-7271-4c60-b277-4513b9efdc12
