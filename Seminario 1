@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.20
+# v0.19.22
 
 using Markdown
 using InteractiveUtils
@@ -51,8 +51,12 @@ e) **_Elevator Pitch_:** Preparar una breve presentación de una duración máxi
 """
 
 # ╔═╡ b2a601e1-6c80-4f3b-9281-dd8a58474e89
+f(x) = -.018*exp(x/.30)+.9
 
+# ╔═╡ 0b49548e-c5a1-430c-9ed9-375a18ed3896
+f(1*1.1)
 
 # ╔═╡ Cell order:
 # ╟─5c2499f8-a0b7-11ed-1d61-614b84ceb5e8
 # ╠═b2a601e1-6c80-4f3b-9281-dd8a58474e89
+# ╠═0b49548e-c5a1-430c-9ed9-375a18ed3896
